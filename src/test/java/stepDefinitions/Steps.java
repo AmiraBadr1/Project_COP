@@ -1,11 +1,12 @@
 package stepDefinitions;
 
+import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.Assert;
+import org.example.Base;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -19,21 +20,15 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
-public class Steps {
+public class Steps extends Base {
 
     WebDriver driver;
-    @Given("User opens chrome browser {string}")
-    @Given("User navigates to upload page {string}")
-    public void user_opens_chrome_browser(String url) {
+    @Given("User opens {string} browser {string}")
+    public void user_opens_chrome_browser(String browser,String url) {
 
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.get(url);
-        driver.manage().timeouts().implicitlyWait(20,TimeUnit.SECONDS);
-        System.out.println("driver = " + driver);
-
+        Base.lunchBrowser(browser,url);
     }
 
 
@@ -46,7 +41,6 @@ public class Steps {
         driver.get(fireUrl);
         driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
         System.out.println("driver = " + driver);
-
     }
 
     @Then("the page title should be {string}")
@@ -57,30 +51,29 @@ public class Steps {
         System.out.println("Title we got = " + actualTitle);
 
         boolean containsUnexpected = actualTitle.toLowerCase().contains(unexpectedTitle.toLowerCase());
-        System.out.println("containsUnexpected? " + containsUnexpected);
-
         assertTrue("Title should not be "+ unexpectedTitle, containsUnexpected);
-        driver.quit();
+
+        //driver.quit();
     }
 
 
     @Then("DuckDuckGo logo should be visible")
     public void DuckDuckGo_logo_should_be_visible(){
 
-        WebElement logo = new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"__next\"]/div/main/article/div[1]/div[1]/div[2]/div/header/div/section[1]/a/img")));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement logo = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"__next\"]/div/main/article/div[1]/div[1]/div[2]/div/header/div/section[1]/a/img")));
 
         System.out.println(logo);
         assertTrue("DuckDuckGo logo should be visible", logo.isDisplayed());
-        driver.quit();
+        //driver.quit();
     }
 
     @When ("User searches for {string}")
     public void User_searches_for(String searchWord){
-        WebElement searchBox = new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.elementToBeClickable(By.id("searchbox_input")));
-        searchBox.sendKeys(searchWord + Keys.ENTER);
 
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement searchBox = wait.until(ExpectedConditions.elementToBeClickable(By.id("searchbox_input")));
+        searchBox.sendKeys(searchWord + Keys.ENTER);
     }
 
 
@@ -93,15 +86,10 @@ public class Steps {
 
         List<WebElement> elements = driver.findElements(By.className("eVNpHGjtxRBq_gLOfGDr"));
 
-        for (WebElement element : elements) {
-            System.out.println(element.getAttribute("href"));
-
-        }
         WebElement firstLink = elements.get(0);
         String actualHref = firstLink.getAttribute("href");
-        Assert.assertEquals("First result URL is correct!", expectedHref, actualHref);
-        driver.quit();
-
+        assertEquals("First result URL is incorrect", expectedHref, actualHref);
+        //driver.quit();
     }
 
     @Then("The text of the fourth result should be {string}")
@@ -117,12 +105,12 @@ public class Steps {
             System.out.println(element.getAttribute("text"));
 
         }
-        WebElement fourthText = elements.get(2);
+
+        WebElement fourthText = elements.get(3);
         String actualText = fourthText.getAttribute("text");
-        Assert.assertEquals("fourth result text is correct!", expectedWord, actualText);
+        assertEquals("fourth result text is correct", expectedWord, actualText);
 
-        driver.quit();
-
+        //driver.quit();
     }
 
     @And("User goes to the second page of results")
@@ -134,10 +122,6 @@ public class Steps {
 
         List<WebElement> elements = driver.findElements(By.className("eVNpHGjtxRBq_gLOfGDr"));
 
-        for (WebElement element : elements) {
-            System.out.println(element.getAttribute("href"));
-
-        }
         WebElement secondLink = elements.get(1);
         secondLink.click();
 
@@ -146,32 +130,26 @@ public class Steps {
     @Then("the page link should be {string}")
     public void the_page_link_should_be(String expectedLink) {
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        System.out.println("driver = " + driver);
         String actualLink = driver.getCurrentUrl();
 
         System.out.println("Expected Link = " + expectedLink);
-        System.out.println("Actual URL     = " + actualLink);
-
+        System.out.println("Actual URL = " + actualLink);
 
         boolean containsExpected = actualLink.toLowerCase().contains(expectedLink.toLowerCase());
 
-        try {
-            assertTrue(" The page URL does NOT contain the expected link!", containsExpected);
-            System.out.println("The page URL is correct: " + actualLink);
-        } catch (AssertionError e) {
-            System.out.println("Assertion failed: " + e.getMessage());
-            throw e;
-        } finally {
-            driver.quit();
-            System.out.println("Driver closed.");
-        }
+        assertTrue(" The page URL does NOT contain the expected link", containsExpected);
+        System.out.println("The page URL is correct: " + actualLink);
+
+        //driver.quit();
+
     }
 
     @When("User checks the first checkbox if not already checked")
     public void User_checks_the_first_checkbox_if_not_already_checked(){
-        WebElement firstCheckbox = new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"checkboxes\"]/input[1]")));
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement firstCheckbox = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"checkboxes\"]/input[1]")));
+
         firstCheckbox.click();
     }
 
@@ -182,95 +160,79 @@ public class Steps {
         for (int i = 0; i < checkboxes.size(); i++) {
             boolean isChecked = checkboxes.get(i).isSelected();
             System.out.println("Checkbox " + (i + 1) + " is selected: " + isChecked);
-            Assert.assertTrue("Checkbox " + (i + 1) + " should be selected", isChecked);
+            assertTrue("Checkbox " + (i + 1) + " should be selected", isChecked);
         }
-        driver.quit();
-
+        //driver.quit();
     }
 
     @Then("The country for the company {string} should be {string}")
     public void the_country_for_the_company_should_be(String company, String expectedCountry) {
-        System.out.println("[STEP] Locating the table...");
+
         WebElement table = driver.findElement(By.id("customers"));
         List<WebElement> rows = table.findElements(By.tagName("tr"));
 
         boolean companyFound = false;
 
-        System.out.println("[STEP] Looping through table rows...");
         for (WebElement row : rows) {
             List<WebElement> cells = row.findElements(By.tagName("td"));
             if (cells.size() > 0) {
-                System.out.println("[INFO] Found row: " + cells.get(0).getText());
+                System.out.println("Found row: " + cells.get(0).getText());
             }
 
             if (cells.size() > 0 && cells.get(0).getText().equalsIgnoreCase(company)) {
                 String actualCountry = cells.get(2).getText();
-                System.out.println("[MATCH] Company: " + company + " | Actual Country: " + actualCountry);
-                Assert.assertEquals("Country mismatch!", expectedCountry, actualCountry);
+                System.out.println("Company: " + company + " | Actual Country: " + actualCountry);
+                assertEquals("Country mismatch", expectedCountry, actualCountry);
                 companyFound = true;
                 break;
             }
         }
-
         if (!companyFound) {
-            System.out.println("[ERROR] Company '" + company + "' not found in table!");
+            System.out.println("Company " + company + " not found in table");
         }
 
-        Assert.assertTrue("Company not found in table!", companyFound);
-        System.out.println("[STEP] Assertion passed. Quitting browser.");
-        driver.quit();
+        assertTrue("Company not found in table", companyFound);
+        //driver.quit();
     }
 
     @When("User uploads the file {string}")
     public void user_uploads_the_file(String filePath) {
-        System.out.println("[STEP] Uploading file: " + filePath);
 
         WebElement uploadInput = driver.findElement(By.id("file-upload"));
         uploadInput.sendKeys(filePath);
 
         WebElement uploadBtn = driver.findElement(By.id("file-submit"));
         uploadBtn.click();
-        System.out.println("[STEP] Clicked on upload button.");
     }
 
     @Then("The file should be uploaded successfully")
     public void the_file_should_be_uploaded_successfully() {
         WebElement uploadedHeader = driver.findElement(By.tagName("h3"));
         String actualText = uploadedHeader.getText();
-        System.out.println("[STEP] Uploaded header text: " + actualText);
 
-        Assert.assertEquals("File upload failed!", "File Uploaded!", actualText);
-        driver.quit();
-
+        assertEquals("File upload failed", "File Uploaded!", actualText);
+        //driver.quit();
     }
-
 
     @When("User drags the draggable element and drops it into the target")
     public void user_drags_and_drops_element() {
 
-            WebElement source = driver.findElement(By.id("draggable"));
-            WebElement target = driver.findElement(By.id("droppable"));
+        WebElement source = driver.findElement(By.id("draggable"));
+        WebElement target = driver.findElement(By.id("droppable"));
 
-            Actions actions = new Actions(driver);
-            actions.dragAndDrop(source, target).perform();
-
-            System.out.println("Drag and drop action performed");
-
+        Actions actions = new Actions(driver);
+        actions.dragAndDrop(source, target).perform();
     }
 
     @Then("The drop area text should be {string}")
     public void the_drop_area_text_should_be(String expectedText) {
+
         WebElement target = driver.findElement(By.id("droppable"));
         String actualText = target.getText();
 
         System.out.println("Actual text after drop: " + actualText);
-        Assert.assertEquals("Drop result text does not match", expectedText, actualText);
-        driver.quit();
-
+        assertEquals("Drop result text does not match", expectedText, actualText);
+        //driver.quit();
     }
+
 }
-
-
-
-
-
