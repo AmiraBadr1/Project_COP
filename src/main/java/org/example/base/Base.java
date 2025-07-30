@@ -1,29 +1,22 @@
-package org.example;
+package org.example.base;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import io.cucumber.java.After;
 
 public class Base {
-    public static WebDriver driver;
+        public static WebDriver driver;
 
-    public static void lunchBrowser(String browser, String url) {
+    public static void lunchBrowser(String bro, String ul) {
 
-
-        if (browser.equalsIgnoreCase("chrome")) {
+        if (bro.equalsIgnoreCase("chrome")) {
             WebDriverManager.chromedriver().setup();
             driver = new ChromeDriver();
             System.out.println("driver = " + driver);
-        } else if (browser.equalsIgnoreCase("firefox")) {
+        } else if (bro.equalsIgnoreCase("firefox")) {
             WebDriverManager.firefoxdriver().setup();
             driver = new FirefoxDriver();
             System.out.println("driver = " + driver);
@@ -31,15 +24,10 @@ public class Base {
             throw new Error("browser not supported");
         }
         driver.manage().window().maximize();
-        driver.get(url);
+        driver.get(ul);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        System.out.println("driver = " + driver);
     }
 
-    @After
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
 
     }
-}

@@ -1,3 +1,4 @@
+
 Feature: COP Final Project
 
 Scenario: Verify that DuckDuckGo page title is "google"

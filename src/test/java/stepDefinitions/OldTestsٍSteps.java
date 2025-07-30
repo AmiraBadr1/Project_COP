@@ -1,46 +1,31 @@
 package stepDefinitions;
 
-import io.cucumber.java.After;
+// ===== Legacy Code: Before Applying Page Object Model (POM) =====
+
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.example.Base;
+import org.example.base.Base;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class Steps extends Base {
+public class OldTestsٍSteps extends Base {
 
-    WebDriver driver;
+    Base base;
+
     @Given("User opens {string} browser {string}")
     public void user_opens_chrome_browser(String browser,String url) {
-
-        Base.lunchBrowser(browser,url);
-    }
-
-
-    @Given("User opens firefox browser {string}")
-    public void user_opens_firefox_browser(String fireUrl) {
-
-        WebDriverManager.firefoxdriver().setup();
-        driver = new FirefoxDriver();
-        driver.manage().window().maximize();
-        driver.get(fireUrl);
-        driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
-        System.out.println("driver = " + driver);
+        lunchBrowser(browser,url);
     }
 
     @Then("the page title should be {string}")
@@ -53,7 +38,6 @@ public class Steps extends Base {
         boolean containsUnexpected = actualTitle.toLowerCase().contains(unexpectedTitle.toLowerCase());
         assertTrue("Title should not be "+ unexpectedTitle, containsUnexpected);
 
-        //driver.quit();
     }
 
 
@@ -65,7 +49,7 @@ public class Steps extends Base {
 
         System.out.println(logo);
         assertTrue("DuckDuckGo logo should be visible", logo.isDisplayed());
-        //driver.quit();
+
     }
 
     @When ("User searches for {string}")
@@ -89,7 +73,7 @@ public class Steps extends Base {
         WebElement firstLink = elements.get(0);
         String actualHref = firstLink.getAttribute("href");
         assertEquals("First result URL is incorrect", expectedHref, actualHref);
-        //driver.quit();
+
     }
 
     @Then("The text of the fourth result should be {string}")
@@ -110,7 +94,7 @@ public class Steps extends Base {
         String actualText = fourthText.getAttribute("text");
         assertEquals("fourth result text is correct", expectedWord, actualText);
 
-        //driver.quit();
+
     }
 
     @And("User goes to the second page of results")
@@ -124,7 +108,6 @@ public class Steps extends Base {
 
         WebElement secondLink = elements.get(1);
         secondLink.click();
-
     }
 
     @Then("the page link should be {string}")
@@ -139,8 +122,6 @@ public class Steps extends Base {
 
         assertTrue(" The page URL does NOT contain the expected link", containsExpected);
         System.out.println("The page URL is correct: " + actualLink);
-
-        //driver.quit();
 
     }
 
@@ -162,7 +143,7 @@ public class Steps extends Base {
             System.out.println("Checkbox " + (i + 1) + " is selected: " + isChecked);
             assertTrue("Checkbox " + (i + 1) + " should be selected", isChecked);
         }
-        //driver.quit();
+
     }
 
     @Then("The country for the company {string} should be {string}")
@@ -192,7 +173,7 @@ public class Steps extends Base {
         }
 
         assertTrue("Company not found in table", companyFound);
-        //driver.quit();
+
     }
 
     @When("User uploads the file {string}")
@@ -211,7 +192,7 @@ public class Steps extends Base {
         String actualText = uploadedHeader.getText();
 
         assertEquals("File upload failed", "File Uploaded!", actualText);
-        //driver.quit();
+
     }
 
     @When("User drags the draggable element and drops it into the target")
@@ -232,7 +213,7 @@ public class Steps extends Base {
 
         System.out.println("Actual text after drop: " + actualText);
         assertEquals("Drop result text does not match", expectedText, actualText);
-        //driver.quit();
+
     }
 
 }
