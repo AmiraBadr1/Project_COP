@@ -15,18 +15,17 @@ public class Base {
         if (bro.equalsIgnoreCase("chrome")) {
             WebDriverManager.chromedriver().setup();
             driver = new ChromeDriver();
-            System.out.println("driver = " + driver);
+
         } else if (bro.equalsIgnoreCase("firefox")) {
             WebDriverManager.firefoxdriver().setup();
             driver = new FirefoxDriver();
-            System.out.println("driver = " + driver);
+
         } else {
             throw new Error("browser not supported");
         }
         driver.manage().window().maximize();
         driver.get(ul);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        System.out.println("driver = " + driver);
     }
 
 
